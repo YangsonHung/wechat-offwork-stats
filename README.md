@@ -4,8 +4,10 @@
 
 ## 项目文档
 
-- Git 提交质量工具链说明：`./GIT_TOOLING_GUIDE.md`
-- 团队提交规范模板：`./COMMIT_CONVENTION_TEMPLATE.md`
+- Git 提交质量工具链说明：`./docs/GIT_TOOLING_GUIDE.md`
+- 团队提交规范模板：`./docs/COMMIT_CONVENTION_TEMPLATE.md`
+- 团队分支命名规范模板：`./docs/BRANCH_NAMING_TEMPLATE.md`
+- Pull Request 描述模板：`./docs/PULL_REQUEST_TEMPLATE_GUIDE.md`
 
 ## 功能
 
