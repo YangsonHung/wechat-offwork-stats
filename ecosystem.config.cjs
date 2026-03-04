@@ -16,8 +16,8 @@ module.exports = {
         DB_PORT: 3306,
         DB_USER: "offwork_app",
         DB_PASSWORD: "StrongAppPass@2026",
-        DB_NAME: "offwork_stats"
-      }
-    }
-  ]
+        DB_NAME: "offwork_stats",
+      },
+    },
+  ],
 };

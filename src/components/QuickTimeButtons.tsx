@@ -7,7 +7,7 @@ const QUICK_TIMES = [
   "22:00",
   "23:00",
   "00:00",
-  "01:00"
+  "01:00",
 ];
 
 interface QuickTimeButtonsProps {

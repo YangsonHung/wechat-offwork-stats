@@ -11,8 +11,17 @@
     "build": "pnpm build:client && pnpm build:server",
     "build:client": "vite build",
     "build:server": "tsc -p tsconfig.server.json",
+    "lint": "biome check src server shared package.json biome.json commitlint.config.cjs ecosystem.config.cjs vite.config.ts tsconfig.json tsconfig.node.json tsconfig.server.json",
+    "format": "biome check --write src server shared package.json biome.json commitlint.config.cjs ecosystem.config.cjs vite.config.ts tsconfig.json tsconfig.node.json tsconfig.server.json",
+    "commitlint": "commitlint",
+    "prepare": "husky",
     "start": "pnpm start:server",
     "start:server": "node dist-server/server/index.js"
+  },
+  "lint-staged": {
+    "**/*.{js,jsx,ts,tsx,cjs,mjs,json,css}": [
+      "biome check --write"
+    ]
   },
   "dependencies": {
     "@fastify/cors": "^11.1.0",
@@ -25,11 +34,16 @@
     "recharts": "^3.3.0"
   },
   "devDependencies": {
+    "@biomejs/biome": "^2.4.5",
+    "@commitlint/cli": "^20.4.3",
+    "@commitlint/config-conventional": "^20.4.3",
     "@types/node": "^24.5.2",
     "@types/react": "^19.1.13",
     "@types/react-dom": "^19.1.9",
     "@vitejs/plugin-react": "^5.0.4",
     "concurrently": "^9.2.1",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.3.2",
     "tsx": "^4.20.5",
     "typescript": "^5.9.2",
     "vite": "^7.1.7"

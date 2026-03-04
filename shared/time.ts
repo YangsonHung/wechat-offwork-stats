@@ -8,7 +8,7 @@ const shanghaiFormatter = new Intl.DateTimeFormat("zh-CN", {
   day: "2-digit",
   hour: "2-digit",
   minute: "2-digit",
-  hourCycle: "h23"
+  hourCycle: "h23",
 });
 
 export interface ShanghaiParts {
@@ -22,9 +22,7 @@ export interface ShanghaiParts {
 export function getShanghaiParts(date: Date): ShanghaiParts {
   const parts = shanghaiFormatter.formatToParts(date);
   const values = Object.fromEntries(
-    parts
-      .filter((part) => part.type !== "literal")
-      .map((part) => [part.type, Number(part.value)])
+    parts.filter((part) => part.type !== "literal").map((part) => [part.type, Number(part.value)])
   ) as Record<string, number>;
 
   return {
@@ -32,7 +30,7 @@ export function getShanghaiParts(date: Date): ShanghaiParts {
     month: values.month,
     day: values.day,
     hour: values.hour,
-    minute: values.minute
+    minute: values.minute,
   };
 }
 
@@ -49,7 +47,7 @@ function shiftDateKey(dateKey: string, dayDelta: number): string {
   return [
     pivot.getUTCFullYear(),
     `${pivot.getUTCMonth() + 1}`.padStart(2, "0"),
-    `${pivot.getUTCDate()}`.padStart(2, "0")
+    `${pivot.getUTCDate()}`.padStart(2, "0"),
   ].join("-");
 }
 
@@ -98,7 +96,11 @@ export function getDefaultSelectableClock(now = new Date()): string {
   return "18:30";
 }
 
-export function parseOffWorkInput(isoString: string): { statDate: string; minutes: number; date: Date } {
+export function parseOffWorkInput(isoString: string): {
+  statDate: string;
+  minutes: number;
+  date: Date;
+} {
   const date = new Date(isoString);
   if (Number.isNaN(date.valueOf())) {
     throw new Error("时间格式无效");
@@ -114,7 +116,7 @@ export function parseOffWorkInput(isoString: string): { statDate: string; minute
   return {
     statDate: getStatDateFromDate(date),
     minutes,
-    date
+    date,
   };
 }
 

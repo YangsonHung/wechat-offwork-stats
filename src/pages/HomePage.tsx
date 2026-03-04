@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import type { TodayStats, TrendPoint } from "../../shared/types";
-import { minutesToClock } from "../../shared/time";
 import { DistributionChart } from "../components/DistributionChart";
 import { StatCard } from "../components/StatCard";
 import { TrendChart } from "../components/TrendChart";
@@ -21,10 +20,7 @@ export function HomePage() {
       setError(null);
 
       try {
-        const [todayStats, trendStats] = await Promise.all([
-          fetchTodayStats(),
-          fetchTrend(range)
-        ]);
+        const [todayStats, trendStats] = await Promise.all([fetchTodayStats(), fetchTrend(range)]);
 
         if (!active) {
           return;
@@ -74,7 +70,11 @@ export function HomePage() {
         </div>
 
         <div className="cards-grid">
-          <StatCard label="参与人数" value={`${today.participantCount}`} helper="去重后按匿名用户计算" />
+          <StatCard
+            label="参与人数"
+            value={`${today.participantCount}`}
+            helper="去重后按匿名用户计算"
+          />
           <StatCard label="首次报下班均值" value={today.avgFirstOffWork} />
           <StatCard label="最终下班均值" value={today.avgFinalOffWork} />
           <StatCard label="最终下班中位数" value={today.medianFinalOffWork} />

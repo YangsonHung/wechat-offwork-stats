@@ -4,15 +4,15 @@ import type {
   RangeOption,
   SubmitCheckoutResponse,
   TodayStats,
-  TrendPoint
+  TrendPoint,
 } from "../../shared/types";
 
 async function requestJson<T>(path: string, init?: RequestInit): Promise<T> {
   const response = await fetch(path, {
     headers: {
-      "Content-Type": "application/json"
+      "Content-Type": "application/json",
     },
-    ...init
+    ...init,
   });
 
   const payload = (await response.json()) as T & { error?: string };
@@ -27,7 +27,7 @@ async function requestJson<T>(path: string, init?: RequestInit): Promise<T> {
 export function submitCheckout(input: CheckoutEntryInput): Promise<SubmitCheckoutResponse> {
   return requestJson("/api/checkouts", {
     method: "POST",
-    body: JSON.stringify(input)
+    body: JSON.stringify(input),
   });
 }
 

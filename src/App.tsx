@@ -14,10 +14,7 @@ export default function App() {
           </p>
         </div>
         <nav className="nav">
-          <NavLink
-            to="/"
-            className={({ isActive }) => (isActive ? "nav-link active" : "nav-link")}
-          >
+          <NavLink to="/" className={({ isActive }) => (isActive ? "nav-link active" : "nav-link")}>
             今日统计
           </NavLink>
           <NavLink

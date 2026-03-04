@@ -5,7 +5,7 @@ import {
   ResponsiveContainer,
   Tooltip,
   XAxis,
-  YAxis
+  YAxis,
 } from "recharts";
 import type { TrendPoint } from "../../shared/types";
 
@@ -32,7 +32,7 @@ export function TrendChart({ data }: TrendChartProps) {
             contentStyle={{
               background: "#0f1a2d",
               border: "1px solid rgba(255,255,255,0.12)",
-              borderRadius: 12
+              borderRadius: 12,
             }}
           />
           <Line

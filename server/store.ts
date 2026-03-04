@@ -24,7 +24,7 @@ const pool = mysql.createPool({
   dateStrings: true,
   waitForConnections: true,
   connectionLimit: 10,
-  queueLimit: 0
+  queueLimit: 0,
 });
 
 let schemaReady: Promise<void> | null = null;
@@ -72,7 +72,7 @@ function mapRowToEntry(row: CheckoutEntryRow): CheckoutEntry {
     ipHash: row.ip_hash,
     userAgentHash: row.user_agent_hash,
     source: row.source,
-    timezone: row.timezone
+    timezone: row.timezone,
   };
 }
 
@@ -152,7 +152,7 @@ export async function insertEntry(entry: CheckoutEntry): Promise<void> {
       entry.ipHash,
       entry.userAgentHash,
       entry.source,
-      entry.timezone
+      entry.timezone,
     ]
   );
 }

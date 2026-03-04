@@ -1,10 +1,6 @@
 :root {
   color-scheme: dark;
-  font-family:
-    "PingFang SC",
-    "Noto Sans SC",
-    "Microsoft YaHei",
-    sans-serif;
+  font-family: "PingFang SC", "Noto Sans SC", "Microsoft YaHei", sans-serif;
   line-height: 1.5;
   font-weight: 400;
   color: #e7eefc;
@@ -216,7 +212,15 @@ input {
 .field {
   display: grid;
   gap: 10px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-inline-size: 0;
   color: #d7e4fb;
+}
+
+.field > legend {
+  padding: 0;
 }
 
 .quick-grid {

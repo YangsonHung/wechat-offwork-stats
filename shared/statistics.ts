@@ -1,5 +1,5 @@
-import type { CheckoutEntry, DistributionBucket, TodayStats, TrendPoint } from "./types.js";
 import { getRecentStatDates, minutesToClock } from "./time.js";
+import type { CheckoutEntry, DistributionBucket, TodayStats, TrendPoint } from "./types.js";
 
 const BASELINE_MINUTES = 18 * 60 + 30;
 
@@ -48,14 +48,13 @@ function buildDistribution(finalMinutesList: number[]): DistributionBucket[] {
     { key: "18:30-19:59", min: 18 * 60 + 30, max: 19 * 60 + 59 },
     { key: "20:00-21:59", min: 20 * 60, max: 21 * 60 + 59 },
     { key: "22:00-23:59", min: 22 * 60, max: 23 * 60 + 59 },
-    { key: "00:00-02:00", min: 24 * 60, max: 26 * 60 }
+    { key: "00:00-02:00", min: 24 * 60, max: 26 * 60 },
   ];
 
   return buckets.map((bucket) => ({
     bucket: bucket.key,
-    count: finalMinutesList.filter(
-      (minutes) => minutes >= bucket.min && minutes <= bucket.max
-    ).length
+    count: finalMinutesList.filter((minutes) => minutes >= bucket.min && minutes <= bucket.max)
+      .length,
   }));
 }
 
@@ -68,7 +67,7 @@ export function aggregateUsers(entries: CheckoutEntry[]): UserAggregate[] {
       byClient.set(entry.clientId, {
         aliasCode: entry.aliasCode,
         firstMinutes: entry.offWorkMinutesExtended,
-        finalMinutes: entry.offWorkMinutesExtended
+        finalMinutes: entry.offWorkMinutesExtended,
       });
       continue;
     }
@@ -95,7 +94,7 @@ export function getTodayStats(entries: CheckoutEntry[], statDate: string): Today
       p90FinalOffWork: "--:--",
       avgOvertimeMinutes: 0,
       distribution: buildDistribution([]),
-      latestAliases: []
+      latestAliases: [],
     };
   }
 
@@ -117,11 +116,15 @@ export function getTodayStats(entries: CheckoutEntry[], statDate: string): Today
     p90FinalOffWork: minutesToClock(percentile(finalMinutesList, 90)),
     avgOvertimeMinutes: average(overtimeList),
     distribution: buildDistribution(finalMinutesList),
-    latestAliases
+    latestAliases,
   };
 }
 
-export function getTrend(entries: CheckoutEntry[], range: number, baseStatDate: string): TrendPoint[] {
+export function getTrend(
+  entries: CheckoutEntry[],
+  range: number,
+  baseStatDate: string
+): TrendPoint[] {
   const dates = getRecentStatDates(range, baseStatDate);
 
   return dates.map((statDate) => {
@@ -134,7 +137,7 @@ export function getTrend(entries: CheckoutEntry[], range: number, baseStatDate: 
       statDate,
       participantCount: users.length,
       medianFinalOffWorkMinutes: users.length === 0 ? 0 : median(finals),
-      avgOvertimeMinutes: users.length === 0 ? 0 : average(overtime)
+      avgOvertimeMinutes: users.length === 0 ? 0 : average(overtime),
     };
   });
 }

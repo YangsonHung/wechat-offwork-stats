@@ -1,12 +1,4 @@
-import {
-  Bar,
-  BarChart,
-  CartesianGrid,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis
-} from "recharts";
+import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import type { DistributionBucket } from "../../shared/types";
 
 interface DistributionChartProps {
@@ -25,7 +17,7 @@ export function DistributionChart({ data }: DistributionChartProps) {
             contentStyle={{
               background: "#0f1a2d",
               border: "1px solid rgba(255,255,255,0.12)",
-              borderRadius: 12
+              borderRadius: 12,
             }}
           />
           <Bar dataKey="count" fill="#58f0b1" radius={[10, 10, 0, 0]} />

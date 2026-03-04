@@ -1,33 +1,33 @@
 import "dotenv/config.js";
 import crypto from "node:crypto";
-import Fastify from "fastify";
-import type { FastifyReply } from "fastify";
 import fastifyCors from "@fastify/cors";
-import {
-  initializeStore,
-  insertEntry,
-  readEntriesByClientAndStatDate,
-  readEntriesByStatDate,
-  readEntriesByStatDates
-} from "./store.js";
+import type { FastifyReply } from "fastify";
+import Fastify from "fastify";
+import { getTodayStats, getTrend } from "../shared/statistics.js";
 import {
   generateAlias,
-  getStatDateNow,
   getRecentStatDates,
-  parseOffWorkInput
+  getStatDateNow,
+  parseOffWorkInput,
 } from "../shared/time.js";
-import { getTodayStats, getTrend } from "../shared/statistics.js";
 import type {
   CheckoutEntry,
   CheckoutEntryInput,
   ErrorResponse,
   MeTodayResponse,
   RangeOption,
-  SubmitCheckoutResponse
+  SubmitCheckoutResponse,
 } from "../shared/types.js";
+import {
+  initializeStore,
+  insertEntry,
+  readEntriesByClientAndStatDate,
+  readEntriesByStatDate,
+  readEntriesByStatDates,
+} from "./store.js";
 
 const app = Fastify({
-  logger: false
+  logger: false,
 });
 const port = Number(process.env.PORT ?? 8787);
 
@@ -43,7 +43,12 @@ function pruneWindow(values: number[], windowMs: number): number[] {
   return values.filter((value) => value >= cutoff);
 }
 
-function assertRateLimit(key: string, bucket: Map<string, number[]>, limit: number, windowMs: number): void {
+function assertRateLimit(
+  key: string,
+  bucket: Map<string, number[]>,
+  limit: number,
+  windowMs: number
+): void {
   const existing = pruneWindow(bucket.get(key) ?? [], windowMs);
 
   if (existing.length >= limit) {
@@ -54,7 +59,11 @@ function assertRateLimit(key: string, bucket: Map<string, number[]>, limit: numb
   bucket.set(key, existing);
 }
 
-function createEntry(input: CheckoutEntryInput, clientIp: string, userAgent: string): CheckoutEntry {
+function createEntry(
+  input: CheckoutEntryInput,
+  clientIp: string,
+  userAgent: string
+): CheckoutEntry {
   const { statDate, minutes, date } = parseOffWorkInput(input.offWorkTime);
   const clientId = input.clientId.trim();
 
@@ -73,18 +82,14 @@ function createEntry(input: CheckoutEntryInput, clientIp: string, userAgent: str
     ipHash: hashText(clientIp),
     userAgentHash: hashText(userAgent),
     source: "manual_web",
-    timezone: "Asia/Shanghai"
+    timezone: "Asia/Shanghai",
   };
 }
 
-function sendError(
-  response: FastifyReply,
-  status: number,
-  message: string
-): void {
+function sendError(response: FastifyReply, status: number, message: string): void {
   response.code(status).send({
     ok: false,
-    error: message
+    error: message,
   });
 }
 
@@ -95,44 +100,41 @@ app.get("/api/health", (_request, response) => {
 app.post<{
   Body: CheckoutEntryInput;
   Reply: SubmitCheckoutResponse | ErrorResponse;
-}>(
-  "/api/checkouts",
-  async (request, response) => {
-    try {
-      const clientIp = request.ip || "unknown";
-      const userAgentHeader = request.headers["user-agent"];
-      const userAgent = Array.isArray(userAgentHeader)
-        ? userAgentHeader[0] || "unknown"
-        : userAgentHeader || "unknown";
-      const clientId = request.body?.clientId?.trim();
+}>("/api/checkouts", async (request, response) => {
+  try {
+    const clientIp = request.ip || "unknown";
+    const userAgentHeader = request.headers["user-agent"];
+    const userAgent = Array.isArray(userAgentHeader)
+      ? userAgentHeader[0] || "unknown"
+      : userAgentHeader || "unknown";
+    const clientId = request.body?.clientId?.trim();
 
-      if (!clientId) {
-        return sendError(response, 400, "clientId 不能为空");
-      }
-
-      assertRateLimit(clientId, clientRate, 3, 5 * 60 * 1000);
-      assertRateLimit(hashText(clientIp), ipRate, 10, 60 * 1000);
-
-      const entry = createEntry(request.body, clientIp, userAgent);
-      await insertEntry(entry);
-      const sameDayEntries = await readEntriesByClientAndStatDate(entry.clientId, entry.statDate);
-
-      const firstOffWorkTime = sameDayEntries[0].offWorkAt;
-      const finalOffWorkTime = sameDayEntries[sameDayEntries.length - 1].offWorkAt;
-
-      return response.code(201).send({
-        ok: true,
-        statDate: entry.statDate,
-        entryId: entry.id,
-        firstOffWorkTime,
-        finalOffWorkTime
-      });
-    } catch (error) {
-      const message = error instanceof Error ? error.message : "提交失败";
-      return sendError(response, 400, message);
+    if (!clientId) {
+      return sendError(response, 400, "clientId 不能为空");
     }
+
+    assertRateLimit(clientId, clientRate, 3, 5 * 60 * 1000);
+    assertRateLimit(hashText(clientIp), ipRate, 10, 60 * 1000);
+
+    const entry = createEntry(request.body, clientIp, userAgent);
+    await insertEntry(entry);
+    const sameDayEntries = await readEntriesByClientAndStatDate(entry.clientId, entry.statDate);
+
+    const firstOffWorkTime = sameDayEntries[0].offWorkAt;
+    const finalOffWorkTime = sameDayEntries[sameDayEntries.length - 1].offWorkAt;
+
+    return response.code(201).send({
+      ok: true,
+      statDate: entry.statDate,
+      entryId: entry.id,
+      firstOffWorkTime,
+      finalOffWorkTime,
+    });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "提交失败";
+    return sendError(response, 400, message);
   }
-);
+});
 
 app.get("/api/stats/today", async (_request, response) => {
   const statDate = getStatDateNow();
@@ -154,27 +156,24 @@ app.get<{
 app.get<{
   Querystring: { clientId?: string };
   Reply: MeTodayResponse | ErrorResponse;
-}>(
-  "/api/me/today",
-  async (request, response) => {
-    const clientId = `${request.query.clientId ?? ""}`.trim();
+}>("/api/me/today", async (request, response) => {
+  const clientId = `${request.query.clientId ?? ""}`.trim();
 
-    if (!clientId) {
-      return sendError(response, 400, "clientId 不能为空");
-    }
-
-    const statDate = getStatDateNow();
-    const mine = await readEntriesByClientAndStatDate(clientId, statDate);
-
-    return response.send({
-      statDate,
-      entries: mine
-    });
+  if (!clientId) {
+    return sendError(response, 400, "clientId 不能为空");
   }
-);
+
+  const statDate = getStatDateNow();
+  const mine = await readEntriesByClientAndStatDate(clientId, statDate);
+
+  return response.send({
+    statDate,
+    entries: mine,
+  });
+});
 
 await app.register(fastifyCors, {
-  origin: true
+  origin: true,
 });
 
 try {
@@ -188,7 +187,7 @@ try {
 try {
   await app.listen({
     port,
-    host: "0.0.0.0"
+    host: "0.0.0.0",
   });
 } catch (error) {
   console.error(`服务启动失败，端口 ${port} 可能已被占用。`);
