@@ -2,6 +2,11 @@
 
 微信群程序员下班时间统计 MVP。
 
+## 项目文档
+
+- Git 提交质量工具链说明：`./GIT_TOOLING_GUIDE.md`
+- 团队提交规范模板：`./COMMIT_CONVENTION_TEMPLATE.md`
+
 ## 功能
 
 - 半匿名打卡（浏览器生成 `clientId` 和匿名代号）
